@@ -9,8 +9,8 @@ namespace Player
     {
         #region Unity Fields
 
-        [FormerlySerializedAs("Player_GameObject")]
-        public GameObject player;
+        [FormerlySerializedAs("player")] [FormerlySerializedAs("Player_GameObject")]
+        public GameObject playerModel;
 
         [FormerlySerializedAs("player_downPoint")]
         public GameObject playerDownPoint;
@@ -18,24 +18,19 @@ namespace Player
         #endregion
 
         #region Info Fields
-
-        public GameObject playerModel {}
         
-        public Rigidbody Rb { get; private set; }
-        public RaycastHit DownHit { get; set; }
+        public static Rigidbody Rb { get; private set; }
+        public static GameObject player { get; set; }
+        public static RaycastHit DownHit { get; set; }
+
+        public static bool IsGrounded => DownHit.distance < 4.1f;
 
         #endregion
-
-        #region Calc Fields
-
-        //...
-
-        #endregion
-
 
         private void Start()
         {
-            Rb = player.GetComponent<Rigidbody>();
+            player = playerModel;
+            Rb = playerModel.GetComponent<Rigidbody>();
         }
 
         private void Update()

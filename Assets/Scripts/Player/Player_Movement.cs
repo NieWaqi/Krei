@@ -7,17 +7,26 @@ namespace Player
 {
     public class Player_Movement : MonoBehaviour
     {
-        private Player_Api api = new Player_Api();
-
         private void Update()
         {
+            #region Moving
+            
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             
-            Vector3 tempVect = api.player.transform.forward * v +
-                               api.player.transform.right * h;
+            Vector3 tempVect = Player_Api.player.transform.forward * v +
+                               Player_Api.player.transform.right * h;
+            
             tempVect = tempVect.normalized * (500 * Time.deltaTime);
-            api.Rb.AddForce(tempVect);
+            
+            Player_Api.Rb.AddForce(tempVect);
+            
+            #endregion
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Player_Api.Rb.AddForce(Player_Api.player.transform.up.normalized * 500);
+            }
         }
     }
 }
