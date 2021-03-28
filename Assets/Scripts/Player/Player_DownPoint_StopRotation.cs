@@ -5,7 +5,7 @@ namespace Player
 {
     public class Player_DownPoint_StopRotation : MonoBehaviour
     {
-        Quaternion rotation;
+        Quaternion rotation;// = Quaternion.Euler(Vector3.down);
         void Awake()
         {
             rotation = transform.rotation;
