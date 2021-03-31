@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -7,7 +8,7 @@ namespace Player
     // ReSharper disable once InconsistentNaming
     public class Player_Api : MonoBehaviour
     {
-        #region Unity Fields
+        #region Fields
 
         [FormerlySerializedAs("player")] [FormerlySerializedAs("Player_GameObject")]
         public GameObject playerModel;
@@ -15,15 +16,24 @@ namespace Player
         [FormerlySerializedAs("player_downPoint")]
         public GameObject playerDownPoint;
 
-        #endregion
-
-        #region Info Fields
-        
         public static Rigidbody Rb { get; private set; }
         public static GameObject player { get; set; }
         public static RaycastHit DownHit { get; set; }
+        // public static bool SlidingRight { get; set; }
+        // public static bool SlidingLeft { get; set; }
+        public static bool _flyMode { get; set; }
+        public static void ChangeFlyMode()
+        {
+            _flyMode = !_flyMode;
+        }
 
         public static bool IsGrounded => DownHit.distance < 4.1f;
+
+        #endregion
+
+        #region AsyncFuncs
+
+        
 
         #endregion
 
@@ -44,42 +54,6 @@ namespace Player
                 DownHit = downHit; //Send hit to static
                 Debug.DrawLine(transform.position, downHit.point, Color.red);
             }
-
-            
-            //Test Func
-            if (IsGrounded)
-            {
-                this.gameObject.transform.Rotate(0, Input.GetAxis("Mouse X"), 0);
-                this.gameObject.transform.localEulerAngles = new Vector3(0, this.gameObject.transform.localEulerAngles.y, 0);
-            }
-            else
-            { 
-                this.gameObject.transform.Rotate(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X"), 0);
-                //this.gameObject.transform.localEulerAngles = new Vector3(this.gameObject.transform.localEulerAngles.x, this.gameObject.transform.localEulerAngles.y, 0);
-            }
-
-            if (Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-            else if (Cursor.lockState == CursorLockMode.Locked && Input.GetKeyDown(KeyCode.Escape))
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-
-            if (Input.GetKey(KeyCode.Q) && Input.GetKey(KeyCode.E))
-            {
-                transform.Rotate(new Vector3(this.transform.rotation.x * -1,0,this.transform.rotation.z * -1) * Time.deltaTime * 600);
-            }
-            else if(Input.GetKey(KeyCode.Q))
-            {
-                transform.Rotate(new Vector3(0,0,2) * Time.deltaTime * 60);
-            }
-            else if (Input.GetKey(KeyCode.E))
-            {
-                transform.Rotate(new Vector3(0,0,-2) * Time.deltaTime * 60);
-            }
-            
         }
     }
 }
