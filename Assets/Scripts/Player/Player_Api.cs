@@ -15,12 +15,14 @@ namespace Player
 
         [FormerlySerializedAs("player_downPoint")]
         public GameObject playerDownPoint;
+        
+        [FormerlySerializedAs("player_head")]
+        public GameObject playerHead;
 
         public static Rigidbody Rb { get; private set; }
         public static GameObject player { get; set; }
         public static RaycastHit DownHit { get; set; }
-        // public static bool SlidingRight { get; set; }
-        // public static bool SlidingLeft { get; set; }
+        public static GameObject Head { get; set; }
         public static bool _flyMode { get; set; }
         public static void ChangeFlyMode()
         {
@@ -40,6 +42,7 @@ namespace Player
         private void Start()
         {
             player = playerModel;
+            Head = playerHead;
             Rb = playerModel.GetComponent<Rigidbody>();
         }
 

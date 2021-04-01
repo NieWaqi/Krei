@@ -8,6 +8,9 @@ namespace Player
 {
     public class Player_Movement : MonoBehaviour
     {
+        public bool _headRotating { get; set; }
+        //public GameObject _bodyBefore { get; set; }
+
         private void Update()
         {
             #region ChangeStates
@@ -17,23 +20,21 @@ namespace Player
                 Player_Api.ChangeFlyMode();
             }
 
-            //Debug.Log(transform.InverseTransformDirection(Player_Api.Rb.velocity));
             if (Input.GetKey(KeyCode.Q) && Input.GetKey(KeyCode.E))
             {
-                
             }
             else if (Input.GetKey(KeyCode.Q))
             {
                 var localVelocity = transform.InverseTransformDirection(Player_Api.Rb.velocity);
                 if (localVelocity.z > 0)
                 {
-                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 4 -
-                                           Player_Api.player.transform.right * (localVelocity.z / 2));
+                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 2 -
+                                           Player_Api.player.transform.right * localVelocity.z);
                 }
                 else if (localVelocity.z < 0)
                 {
-                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 4 +
-                                           Player_Api.player.transform.right * (localVelocity.z / 2));
+                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 2 +
+                                           Player_Api.player.transform.right * localVelocity.z);
                 }
             }
             else if (Input.GetKey(KeyCode.E))
@@ -41,13 +42,13 @@ namespace Player
                 var localVelocity = transform.InverseTransformDirection(Player_Api.Rb.velocity);
                 if (localVelocity.z > 0)
                 {
-                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 4 +
-                                           Player_Api.player.transform.right * (localVelocity.z / 2));
+                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 2 +
+                                           Player_Api.player.transform.right * localVelocity.z);
                 }
                 else if (localVelocity.z < 0)
                 {
-                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 4 -
-                                           Player_Api.player.transform.right * (localVelocity.z / 2));
+                    Player_Api.Rb.AddForce(-Player_Api.player.transform.forward * localVelocity.z / 2 -
+                                           Player_Api.player.transform.right * localVelocity.z);
                 }
             }
 
@@ -76,12 +77,12 @@ namespace Player
             {
                 if (Input.GetKey(KeyCode.Space))
                 {
-                    Player_Api.Rb.AddForce(Player_Api.player.transform.up.normalized * 50);
+                    Player_Api.Rb.AddForce(Player_Api.player.transform.up.normalized * 19);
                 }
             }
             else
             {
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space) && Player_Api.IsGrounded)
                 {
                     Player_Api.Rb.AddForce(Player_Api.player.transform.up.normalized * 500);
                 }
@@ -98,19 +99,50 @@ namespace Player
 
                 if (!Player_Api._flyMode)
                 {
+                    var localVelocity = transform.InverseTransformDirection(Player_Api.Rb.velocity);
+
                     Quaternion target = Quaternion.Euler(0, Player_Api.player.transform.eulerAngles.y, 0);
-                    Player_Api.player.transform.rotation =
-                        Quaternion.Slerp(Player_Api.player.transform.rotation, target, Time.deltaTime);
+
+                    if (localVelocity.x > 1 && localVelocity.z > 1)
+                    {
+                        Player_Api.player.transform.rotation =
+                            Quaternion.Slerp(Player_Api.player.transform.rotation, target,
+                                (Time.deltaTime * 4.1f) / (localVelocity.x + localVelocity.z));
+                    }
+                    else
+                    {
+                        Player_Api.player.transform.rotation =
+                            Quaternion.Slerp(Player_Api.player.transform.rotation, target,
+                                Time.deltaTime * 4.1f);
+                    }
                 }
             }
             else
             {
-                Player_Api.player.transform.Rotate(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X"), 0);
+                if (Input.GetKey(KeyCode.LeftAlt))
+                {
+                    if (!_headRotating)
+                    {
+                        //_bodyBefore = Player_Api.player;
+                        _headRotating = true;
+                    }
+
+                    Player_Api.Head.transform.Rotate(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X"), 0);
+                }
+                else
+                {
+                    Quaternion target = Quaternion.Euler(Player_Api.player.transform.eulerAngles.x,
+                        Player_Api.player.transform.eulerAngles.y, Player_Api.player.transform.eulerAngles.z);
+                    Player_Api.Head.transform.rotation =
+                        Quaternion.Slerp(Player_Api.Head.transform.rotation, target, Time.deltaTime * 6);
+                    Player_Api.player.transform.Rotate(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X"), 0);
+                }
+
                 //this.gameObject.transform.localEulerAngles = new Vector3(this.gameObject.transform.localEulerAngles.x, this.gameObject.transform.localEulerAngles.y, 0);
             }
 
             #region CursorLock
-            
+
             if (Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
             {
                 Cursor.lockState = CursorLockMode.Locked;
@@ -119,7 +151,7 @@ namespace Player
             {
                 Cursor.lockState = CursorLockMode.None;
             }
-            
+
             #endregion
 
             if (Player_Api._flyMode)

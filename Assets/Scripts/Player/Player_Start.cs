@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,6 +14,8 @@ namespace Player
             player.transform.position = playerStartTransform.position;
             player.transform.rotation = playerStartTransform.rotation;
             player.transform.eulerAngles = playerStartTransform.eulerAngles;
+
+            Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         }
     }
 }
